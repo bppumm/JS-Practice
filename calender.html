@@ -222,20 +222,15 @@
                 calenderCont.appendChild(dateElement)
             }
 
-            //if(nowDays+firstWeek != 35){ //後一月
                 nextShowDays = 42 - (nowDays + firstWeek)
-                // if(nowDays+firstWeek > 35){
-                //     nextShowDays = 42 - (nowDays + firstWeek)
-                // }else{
-                //     nextShowDays = 35 - (nowDays + firstWeek)
-                // }
+
                 for(let next = 1; next<=nextShowDays; next++){
                     let dateElement = document.createElement('li')
                     dateElement.classList.add('grayTxt')
                     dateElement.innerHTML = next;
                     calenderCont.appendChild(dateElement)
                 }
-            //}
+
         }
     })();
     </script>
