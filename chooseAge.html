@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇年齡區間</title>
+</head>
+<body>
+    <style>
+        article{width: 570px; box-shadow: 0 0 15px 5px rgba(0,0,0,0.1); border-radius: 4px; margin: 20px;}
+        .ageBox{ width:570px; padding: 20px 20px 30px 20px; box-sizing: border-box; border-bottom: 2px solid #ccc;}
+        .ageBox .ageSection{margin: 0 0 30px 0;}
+        .ageBox .ageSection span{font: 17px/20px Helvetica, sans-serif; padding: 0 5px;}
+        .ageBox .chooseSection .ageBar{position:relative; width:500px; height: 10px; background-color: #ccc; border-radius: 10px; margin: 0 15px 20px 15px;}
+        .ageBox .chooseSection .ageBar #selectBar{position:absolute; top:0; left:0; width:500px; height: 10px; background-color: darkcyan; border-radius: 10px; margin-bottom: 20px;}
+        .ageBox .chooseSection ul{list-style: none; font-size: 0; margin: 0; padding: 0;}
+        .ageBox .chooseSection ul li{cursor: pointer; display: inline-block; width:20px; text-align: center; font: 15px/20px Helvetica, sans-serif; padding: 0 5px; margin: 0 20px 0 0; color: #666; border-bottom: 1px solid #666;}
+        .ageBox .chooseSection ul li:last-child{margin: 0;}
+        .ageBox .chooseSection ul li.selected{color: darkcyan; border-color: darkcyan;}
+        .btnBox{width: 570px; height: 60px; display: flex; justify-content: space-between;}
+        .btnBox button{border: 0; background: transparent; font: 15px/20px Helvetica, sans-serif; cursor: pointer;}
+        .btnBox .clearBtn{background: transparent; text-decoration: underline; margin: 20px 0 20px 20px; padding: 0;}
+        .btnBox .confirmBtn{color: #fff; background-color: #177c86; border-radius: 4px; padding: 0 10px; line-height: 30px; margin: 15px 20px 15px 0;}
+    </style>
+    <article>
+        <div class="ageBox">
+            <div class="ageSection"><span id="ageFrom">0</span><span id="ageEnd">60+</span></div>
+            <div class="chooseSection">
+                <div class="ageBar">
+                    <div id="selectBar"></div>
+                </div>
+                <ul>
+                    <li class="selected">0</li>
+                    <li>20</li>
+                    <li>25</li>
+                    <li>30</li>
+                    <li>35</li>
+                    <li>40</li>
+                    <li>45</li>
+                    <li>50</li>
+                    <li>55</li>
+                    <li>60</li>
+                    <li class="selected">＋</li>
+                </ul>
+            </div>        
+        </div>
+        <div class="btnBox">
+            <button class="clearBtn" id="clearBtn">清除</button>
+            <button class="confirmBtn">確定</button>
+        </div>
+    </article>
+
+    <script>
+    (function(){
+        const agebtn = document.querySelectorAll('.chooseSection ul li');
+        const ageBtnAry = Array.prototype.slice.call(agebtn);
+        const ageSec = document.getElementsByClassName('ageSection');
+        const fromNum = document.getElementById('ageFrom');
+        const endNum = document.getElementById('ageEnd');
+        const selectBar = document.getElementById('selectBar');
+        const clearBtn = document.getElementById('clearBtn');
+        let num1 = 0;
+        let num2 = 60 + '+';
+        let count = 0;
+        let preLi;
+        let nowLi;
+        let preSelectNum;
+        let liPosAry = [];
+
+        function showAge(){            
+            if(num2 == 61){
+                endNum.innerHTML = "歲以上";
+                fromNum.innerHTML = num1;
+                if(num1==0){
+                    endNum.innerHTML = "60+歲以上";
+                    fromNum.innerHTML = num1 + "&nbsp;&nbsp;" + "~";
+                }
+            }else if(num1==0 && num2 == 20){
+                endNum.innerHTML = "歲以下";
+                fromNum.innerHTML = num2;
+            }else{
+                endNum.innerHTML = num2 + '歲';
+                fromNum.innerHTML = num1 + "&nbsp;&nbsp;" + "~";
+            }            
+        }
+        showAge();
+        agebtn.forEach(function(btn){
+            btn.addEventListener('click', chooseAgeHandler);
+        })
+
+        clearBtn.addEventListener('click',clearHandler);
+        function clearHandler(){
+            const k = ageBtnAry.length - 1;
+            count = 0;
+            num1 = 0;
+            num2 = 60 + '+';
+            showAge();
+            agebtn.forEach(function(el){//清除所有樣式
+                el.classList.remove('selected')
+            })
+            ageBtnAry[0].classList.add('selected')
+            ageBtnAry[k].classList.add('selected')
+            selectBar.style.width = '500px';
+            selectBar.style.left = '0px';
+
+            preLi=''
+            nowLi=''
+            preSelectNum='';
+            liPosAry = [];
+        }
+
+        function chooseAgeHandler(){
+            count++;            
+            nowLi = ageBtnAry.indexOf(this);//記錄現在點的是第幾個
+            let ageNum;
+            if(this.innerText == '＋'){
+                ageNum = 61;
+            }else{
+                ageNum = this.innerText;
+            }
+            cal(ageNum,nowLi)
+        }
+
+        function changeColor(){
+            agebtn.forEach(function(el){//清除所有樣式
+                el.classList.remove('selected')
+            })
+            for(let i=0; i<liPosAry.length; i++){
+                var j=liPosAry[i];
+                console.log("j",j)
+                ageBtnAry[j].classList.add('selected');
+            }
+            if(liPosAry.length == 2){
+                let n = Math.abs(liPosAry[1] - liPosAry[0])
+                selectBar.style.width = n * 50 + 'px';
+                if(liPosAry[0]<liPosAry[1]){
+                    selectBar.style.left = liPosAry[0]*50 + 'px';
+                }else{
+                    selectBar.style.left = liPosAry[1]*50 + 'px';
+                }                
+            }else{
+                selectBar.style.width = '0px';
+            }
+        }
+        //判斷數字大小
+        function cal(age,liPos){
+            if(age === num1 || age === num2){
+                num1 = age;
+                count = 1;
+                liPosAry[0] = liPos;
+                liPosAry.length=1;
+                changeColor()
+                return;
+            }
+            if(count === 1){
+                num1 = age;
+                liPosAry[0] = liPos;
+                changeColor()
+            }
+            if(count === 2){
+                if(age > num1){
+                    num2 = age;                    
+                }else{
+                    num2 = num1;
+                    num1 = age;
+                }
+                liPosAry[1] = liPos;
+                changeColor()
+                showAge()      
+            }
+            if(count >= 3){
+                if(age > num2){
+                    num2 = age;
+                    liPosAry[1] = liPos;
+                }else if(age < num1){
+                    num1 = age;      
+                    liPosAry[0] = liPos;
+                }else{
+                    if(preSelectNum === num1){
+                        num2 = age;
+                        liPosAry[1] = liPos;
+                    }else if(preSelectNum === num2){
+                        num1 = age;
+                        liPosAry[0] = liPos;
+                    }
+                }
+                changeColor()
+                showAge()
+            }
+            
+            preSelectNum = age;
+            console.log('最後選的是',preSelectNum,'選第',count,'幾次')
+            console.log("num1=",num1,"num2=",num2)
+        }
+
+        })();
+        
+    </script>
+</body>
+</html>
