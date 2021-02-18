@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萬年曆</title>
+</head>
+<body>
+    <style>
+        ul{font-size: 0; margin: 0; padding:0;}
+        .nowDate{margin: 10px 0 0 0; padding: 0 ; font: 17px/40px sans-serif; width: 320px; text-align: center; color: #fff; background-color: #4eabe4; border-radius: 7px 7px 0 0;}
+        .weatherBox{width:320px; height: 80px; background-color: #7bc7f5; padding: 10px 20px;box-sizing: border-box; font-size: 0;}
+        .weatherBg{width:60px; height: 60px; background-image: url("img/cloud.svg"); display: inline-block; background-size: cover;}
+        .weatherBox img{display: inline-block; vertical-align: middle;}
+        .weatherBox .tempTxt{width:160px; font: bold 36px/60px sans-serif; color: #fff; display: inline-block; margin: 0 10px; vertical-align: top; text-align: center;}
+        .calenderBox{width: 320px;border: 1px solid #7bc7f5;padding: 10px 10px 0 10px;box-sizing: border-box;border-radius: 0 0 7px 7px; position: relative; height: 280px;}
+        .calenderBox .bgLayer{width: 100%; height: calc(100% - 40px); background-color: #000; opacity: 0.1; position: absolute; top: 40px; left: 0; display: none; z-index: 2;}
+        .chooseYearMonth{width: 300px; margin: 0; padding: 0 10px; box-sizing: border-box;}
+        .chooseYearMonth .showYearTxt{display:inline-block; font: 17px/30px sans-serif; width: 200px; text-align: center; margin: 0 10px; vertical-align: middle; cursor: pointer;}
+        .chooseYearMonth span{width: 30px; height: 30px; position: relative; cursor: pointer; display: inline-block; vertical-align: middle;}
+        .chooseYearMonth .arrowL::before{content:""; display:inline-block; width: 0; height: 0; border-style: solid; position: absolute; top: 5px; left: 9px; border-width: 10px 12px 10px 0; border-color: transparent rgb(72, 160, 211) transparent transparent;}
+        .chooseYearMonth .arrowR::before{content:""; display:inline-block; width: 0; height: 0; border-style: solid; position: absolute; top: 5px; left: 9px; border-width: 10px 0px 10px 12px; border-color: transparent transparent transparent rgb(72, 160, 211);}
+        .calenderBox .chooseFloat{border-radius: 10px; background-color: aliceblue; display: none; width: calc(100% - 20px); position: absolute; top: 50px; left: 10px; box-shadow: 2px 2px 6px rgba(0,0,0,0.1); z-index: 3; height: 220px;}
+        .calenderBox .chooseFloat ul{margin: 0; padding: 10px 0 0 10px; font-size: 0; display: flex; flex-wrap: wrap;}
+        .calenderBox .chooseFloat ul li{margin: 0 10px 15px 0; padding: 0 ; display: inline-block; list-style: none; border: 1px solid #b7b7b7; flex: 1; font:17px/30px sans-serif; flex-basis: calc((100% - 40px) / 3); border-radius: 5px; text-align: center; color: #666; background-color: #fff; cursor: pointer;}
+        .calenderBox .dateBox ul{padding: 10px; box-sizing: border-box; display: flex;}
+        .calenderBox .dateBox ul li{list-style: none; display: inline-block; font: 17px/30px sans-serif; flex: 1; padding: 0 5px; text-align: center; box-sizing: border-box;}
+        .calenderBox .dateContent ul{flex-wrap: wrap; padding: 0 10px 10px 10px;}
+        .calenderBox .dateContent ul li{flex-basis: calc(100% / 7); position: relative;}
+        .calenderBox .dateContent ul li.grayTxt{color: #ccc;}
+        .calenderBox .dateContent ul li.todayBg::after{content:''; background-color: #d6eff6; width: 30px; height: 30px; border-radius: 50%; display: inline-block; position: absolute; top: 0; left: calc(50% - 15px); z-index: -1;}
+    </style>
+    <div>
+        <p id="nowDate" class="nowDate"></p>
+        <div class="weatherBox">
+            <!-- <div class="weatherBg"></div> -->
+            <img src="img/cloud.svg" width="60px" height="60px">
+            <p class="tempTxt">15 ~ 20</p>
+            <img src="img/thermometer.svg" width="40px" height="40px">
+        </div>      
+        <div class="calenderBox">
+            <div class="chooseYearMonth"><span class="arrowL" id="arrowL"></span><p class="showYearTxt" id="showYearTxt">2020</p><span class="arrowR" id="arrowR"></span></div>
+            <div class="bgLayer" id="bgLayer"></div>
+            <div class="chooseFloat" id="yearBox">
+                <ul>
+                    <li>2019</li>
+                    <li>2020</li>
+                    <li>2021</li>
+                    <li>2022</li>
+                    <li>2023</li>
+                    <li>2024</li>
+                    <li>2025</li>
+                    <li>2026</li>
+                    <li>2027</li>
+                    <li>2028</li>
+                    <li>2029</li>
+                    <li>2030</li>
+                </ul>
+            </div>
+            <div class="chooseFloat" id="monthBox">
+                <ul>
+                    <li>一月</li>
+                    <li>二月</li>
+                    <li>三月</li>
+                    <li>四月</li>
+                    <li>五月</li>
+                    <li>六月</li>
+                    <li>七月</li>
+                    <li>八月</li>
+                    <li>九月</li>
+                    <li>十月</li>
+                    <li>十一月</li>
+                    <li>十二月</li>
+                </ul>
+            </div>
+            <div class="dateBox">
+                <ul class="week">
+                    <li>日</li>
+                    <li>一</li>
+                    <li>二</li>
+                    <li>三</li>
+                    <li>四</li>
+                    <li>五</li>
+                    <li>六</li>
+                </ul>
+                <div class="dateContent"><ul id="dateUL"></ul></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){   
+        const date = new Date()
+        let setYear = date.getFullYear();//當前年份
+        let setMonth = date.getMonth()+1; //當前月份
+        let setDate = date.getDate(); //當前日期
+        let floatOpen = 0;
+        const nowDateTxt = document.getElementById('nowDate');
+        const showYearTxt = document.getElementById('showYearTxt');
+        const preArrow = document.getElementById('arrowL');
+        const nextArrow = document.getElementById('arrowR');
+        const bg = document.getElementById('bgLayer')
+        const yearFloat = document.getElementById('yearBox')
+        const yearLI = document.querySelectorAll('#yearBox ul li')
+        const monthFloat = document.getElementById('monthBox')
+        const monthLI = document.querySelectorAll('#monthBox ul li')
+        const monthLIAry = Array.prototype.slice.call(monthLI)
+        let calenderCont = document.getElementById('dateUL')
+
+        nowDateTxt.innerHTML = setYear + '年' + setMonth + '月' + setDate + '日';
+        showYearTxt.innerHTML = setYear + '年' + setMonth + '月' ;
+
+        getCalender();
+        showYearTxt.addEventListener('click', openYearBox);
+        yearLI.forEach(
+            function(yearBtn){
+                yearBtn.addEventListener('click', chooseYearHandler)
+                yearBtn.addEventListener('mouseenter', mouseOverHandler)
+                yearBtn.addEventListener('mouseleave', mouseLeaveHandler)
+            }
+        )
+        monthLI.forEach(
+            function(monthBtn){
+                monthBtn.addEventListener('click', chooseMonthHandler)
+                monthBtn.addEventListener('mouseenter', mouseOverHandler)
+                monthBtn.addEventListener('mouseleave', mouseLeaveHandler)
+            }
+        )
+
+        preArrow.addEventListener('click', preMonthHandler)
+        nextArrow.addEventListener('click', nextMonthHandler)
+
+        function preMonthHandler(){
+            if(setMonth > 1){
+                setMonth --;
+            }else if(setMonth == 1){          
+                if(setYear==1970){
+                    return
+                }else{
+                    setMonth = 12;
+                    setYear = setYear > 1970? setYear-1 : 1970;
+                }
+            }
+            showYearTxt.innerHTML = setYear + '年' + setMonth + '月' ;
+            getCalender();
+        }
+
+        function nextMonthHandler(){
+            if(setMonth < 12){
+                setMonth ++;
+            }else if(setMonth == 12){          
+                setMonth = 1;
+                setYear ++;
+            }
+            showYearTxt.innerHTML = setYear + '年' + setMonth + '月' ;
+            getCalender();
+        }
+
+        function openYearBox(){ //選年月
+            if(floatOpen == 0){
+                yearFloat.style.display='block';
+                floatOpen = 1;
+                bg.style.display='block';
+            }else{
+                yearFloat.style.display='none';
+                monthFloat.style.display='none';
+                floatOpen = 0;
+                bg.style.display='none';
+            }   
+        }
+
+        function mouseOverHandler(){ //滑進按鈕
+            this.style.backgroundColor = 'rgb(131, 194, 230';
+            this.style.color = '#fff';
+        }
+        function mouseLeaveHandler(){ //滑出按鈕
+            this.style.backgroundColor = '#fff';
+            this.style.color = '#666';
+        }
+
+        function chooseYearHandler(){ //選年份
+            yearFloat.style.display='none';
+            monthFloat.style.display='block';
+            floatOpen = 0;
+            setYear = this.innerHTML;
+        }
+
+        function chooseMonthHandler(){ //選月份
+            yearFloat.style.display='none';
+            monthFloat.style.display='none';
+            bg.style.display='none';     
+            floatOpen = 0;
+            setMonth = monthLIAry.indexOf(this) + 1;
+            showYearTxt.innerHTML = setYear + '年' + setMonth + '月' ;
+            getCalender();
+        }
+
+        function getCalender(){ //產出月曆
+            calenderCont.innerHTML='';
+            let firstWeek = new Date(setYear,setMonth-1,1).getDay() //該月1號是星期幾
+            let preDays = new Date(setYear,setMonth-1,0).getDate();//上個月有幾天
+            let nowDays = new Date(setYear,setMonth,0).getDate();//這個月有幾天
+            let lastWeek = date.getDay(setYear,nowDays,0) //該月最後一天是星期幾        
+            let preShowDays = preDays - firstWeek + 1; //上個月要從幾號開始秀
+            let nextShowDays = 0;//下個月要秀幾天
+
+            if(firstWeek != 0){ //前一月
+                for(let pre = preShowDays; pre<=preDays; pre++){
+                    let dateElement = document.createElement('li')
+                    dateElement.classList.add('grayTxt')
+                    dateElement.innerHTML = pre;
+                    calenderCont.appendChild(dateElement)
+                }
+            }
+            
+            for(let now = 1; now<=nowDays; now++){ //當前月
+                let dateElement = document.createElement('li')
+                dateElement.innerHTML = now;
+                if(now == setDate && setYear == date.getFullYear() && setMonth == date.getMonth()+1){
+                    dateElement.classList.add('todayBg')
+                }
+                calenderCont.appendChild(dateElement)
+            }
+
+                nextShowDays = 42 - (nowDays + firstWeek)
+
+                for(let next = 1; next<=nextShowDays; next++){
+                    let dateElement = document.createElement('li')
+                    dateElement.classList.add('grayTxt')
+                    dateElement.innerHTML = next;
+                    calenderCont.appendChild(dateElement)
+                }
+        }
+    })();
+    </script>
+</body>
