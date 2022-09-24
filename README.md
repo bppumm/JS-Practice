@@ -1,4 +1,4 @@
-# profolio
+# JS Practice
 chooseAge.html <選擇年齡區間> <br>
 skill: 原生JS <br>
 note: 使用原生JS寫出此的功能，可使用在需要篩選年齡的頁面上 <br>
